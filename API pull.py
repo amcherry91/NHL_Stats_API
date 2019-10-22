@@ -39,3 +39,5 @@ data_standings = json.loads(source_standings)
 for item in data_standings["records"]:
     c.writerow([item["teamRecords"]])
 
+# code is WIP
+
