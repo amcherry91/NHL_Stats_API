@@ -11,7 +11,7 @@ r = requests.get(url + team_endpoint + '/' + str(id) + roster_endpoint)
 teams = pd.io.json.json_normalize(r.json()['teams'])
 team_id = teams[teams['teamName'] == 'Hurricanes']['id'].values[0]
 roster = pd.io.json.json_normalize(r.json()['roster'])
-print(team_id)
+print(roster)
 
 df = pd.DataFrame()
 for p_link in roster['person.link']:
