@@ -7,8 +7,8 @@ This will be an on-going project to develop scripts which can be run to request 
 1. Install [Python](https://www.python.org/downloads/)
 2. Install the following libraries using the 'pip install' function of your command terminal or IDE;
 ```
-import pandas as pd
-import requests
+pip install pandas
+pip install requests
 ```
 3. Setup your IDE to run the scripts
 4. Execute the scripts
