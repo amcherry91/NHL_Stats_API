@@ -11,12 +11,14 @@ pd.set_option('display.width', 1000)
 url = 'https://statsapi.web.nhl.com/api/v1/teams'
 r = requests.get(url)
 teams = pd.io.json.json_normalize(r.json()['teams'])
-#print(teams[teams['name']== 'Nashville Predators']['id'])
+#print(teams[teams['name'] == 'Nashville Predators']['id']) example of how to find a teams ID number
 
-url_1 = 'https://statsapi.web.nhl.com/api/v1/teams/18/roster'
+# New Jersey Devils
+url_1 = 'https://statsapi.web.nhl.com/api/v1/teams/1/roster'
 r_1 = requests.get(url_1)
 roster = r_1.json()['roster']
 roster = pd.io.json.json_normalize(r_1.json()['roster'])
+print(roster)
 
 df = pd.DataFrame()
 for pid in roster['person.id']:
@@ -29,7 +31,7 @@ for pid in roster['person.id']:
         stats['Name'] = roster[roster['person.id'] == pid]['person.fullName'].values[0]
         df = pd.concat([df, stats], ignore_index=True, sort=False)
     else:
-        print('No stats for ' + roster[roster['person.id'] == pid]['person.fullName']).values[0]
+        print('No stats for ' + roster[roster['person.id'] == pid]['person.fullName'])
 print(df.columns)
 
 keep_cols = ['team.id', 'Name', 'stat.games', 'stat.points', 'stat.goals', 'stat.assists', 'stat.plusMinus', 'stat.hits']
