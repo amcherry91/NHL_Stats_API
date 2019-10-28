@@ -1,6 +1,6 @@
 # Scripts to get requests from the NHL API
 
-This will be an on-going project to develop scripts which can be run to request data from the NHL API about teams, players, season data, results, and more.
+This will be an on-going project to develop scripts which can be run to request data from the NHL API about teams, players, season data, results, and more. The scripts will eventually be able to request live game data as well as past data and information on upcoming matches.
 
 ## Guide
 
