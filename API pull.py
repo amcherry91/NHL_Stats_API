@@ -1,43 +1,32 @@
 import requests
 import json
-import urllib.request
-from urllib.request import urlopen
 import csv
 import pandas as pd
 
 # go to https://gitlab.com/dword4/nhlapi/blob/master/stats-api.md#teams for documentation and list of directories
+url = 'https://statsapi.web.nhl.com/api/v1/teams'
+team_endpoint = 'https://statsapi.web.nhl.com/api/v1/teams/12'
+roster_endpoint = 'https://statsapi.web.nhl.com/api/v1/teams/12/roster'
+r = requests.get(url + team_endpoint + '/' + str(id) + roster_endpoint)
+teams = pd.io.json.json_normalize(r.json()['teams'])
+team_id = teams[teams['teamName'] == 'Hurricanes']['id'].values[0]
+roster = pd.io.json.json_normalize(r.json()['roster'])
+print(team_id)
 
-"""response = requests.get("https://statsapi.web.nhl.com/api/v1/teams")
-print(response.json())
+df = pd.DataFrame()
+for p_link in roster['person.link']:
+    r = requests.get(url + p_link + '/stats', params={'stats':'gameLog', 'season':'20182019'})
+    stats = pd.io.json.json_normalize(r.json()['stats'][0]['splits'])
+    if not stats.empty:
+        stats = stats.groupby(['team.name']).aggregate(sum)
+        stats['playerName'] = roster[roster['person.link'] == p_link]['person.fullName'].values[0]
+        df = pd.concat([df, stats], ignore_index=True, sort=False)
+    else:
+        print('No stats for ' + roster[roster['person.link'] == p_link]['person.fullName'].values[0])
 
-def jprint(obj):
-    text = json.dumps(obj, sort_keys=True, indent=4)
-    print(text)
-
-jprint(response.json())
-
-# get current team information
-r = response.json()
-data_teams = (r["teams"])
-c = csv.writer(open("team_data_api.csv", "w"), lineterminator= "\n")
-
-for item in r["teams"]:
-    c.writerow([item["id"], item["name"], item["abbreviation"], item["teamName"], item["link"], item["venue"], item["locationName"],
-               item["firstYearOfPlay"], item["division"], item["conference"], item["franchise"], item["shortName"]])"""
-
-# get current team standings
-response_standings = requests.get("https://statsapi.web.nhl.com/api/v1/standings")
-print(response_standings.json())
-c = csv.writer(open("team_standings.csv", "w"), lineterminator= "\n")
-
-with urlopen("https://statsapi.web.nhl.com/api/v1/standings") as response:
-    source_standings = response.read()
-
-data_standings = json.loads(source_standings)
-# print(json.dumps(data_standings, indent= 2))
-
-for item in data_standings["records"]:
-    c.writerow([item["teamRecords"]])
+keep_cols = ['stat.assists', 'stat.games', 'stat.goals', 'stat.hits', 'stat.points', 'playerName']
+df = df[keep_cols]
+rename_cols = {'stat.assist': 'assists', 'stat.games': 'games', 'stat.goals': 'goals', 'stat.hits': 'hits',
+               'stat.points': 'points'}
 
 # code is WIP
-
